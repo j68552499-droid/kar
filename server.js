@@ -28,22 +28,25 @@ app.post('/submit', async (req, res) => {
   try {
     const answers = req.body;
     console.log('\n✉️ Received answers, preparing email...');
-    console.log('SMTP Config:', {
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      user: process.env.SMTP_USER,
-      sender: process.env.SENDER_EMAIL,
-      recipient: process.env.RECIPIENT_EMAIL
+    console.log('SMTP Config check:', {
+      host: process.env.SMTP_HOST ? '✓ Set' : '✗ Missing',
+      port: process.env.SMTP_PORT ? '✓ Set' : '✗ Missing',
+      user: process.env.SMTP_USER ? '✓ Set' : '✗ Missing',
+      pass: process.env.SMTP_PASS ? '✓ Set' : '✗ Missing',
+      sender: process.env.SENDER_EMAIL ? '✓ Set' : '✗ Missing',
+      recipient: process.env.RECIPIENT_EMAIL ? '✓ Set' : '✗ Missing'
     });
 
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('❌ Missing required SMTP variables');
       return res.status(500).json({ ok: false, error: 'Missing SMTP environment variables' });
     }
 
+    console.log(`\n📧 Creating transporter for ${process.env.SMTP_USER}...`);
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: false,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -55,11 +58,11 @@ app.post('/submit', async (req, res) => {
       socketTimeout: 10000
     });
 
-    console.log('✓ Transporter configured!');
+    console.log('📨 Transporter created, building email...');
 
     const htmlBody = buildEmailHtml(answers);
 
-    console.log(`\n📧 Sending email to: ${process.env.RECIPIENT_EMAIL}`);
+    console.log(`\n🚀 Attempting to send email to: ${process.env.RECIPIENT_EMAIL}`);
     const info = await transporter.sendMail({
       from: process.env.SENDER_EMAIL,
       to: process.env.RECIPIENT_EMAIL,
@@ -67,10 +70,11 @@ app.post('/submit', async (req, res) => {
       html: htmlBody
     });
 
-    console.log('✓ Email sent! Message ID:', info.messageId);
+    console.log('✅ Email sent successfully! Message ID:', info.messageId);
     res.json({ ok: true, messageId: info.messageId });
   } catch (err) {
-    console.error('\n❌ Email Error:', err.message);
+    console.error('\n❌ FAILURE - Email Error:', err.message);
+    console.error('Error code:', err.code);
     console.error('Full error:', err);
     res.status(500).json({ ok: false, error: err.message });
   }
