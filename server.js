@@ -6,14 +6,13 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 
-// Serve static files from public folder
-const publicPath = path.join(__dirname, 'public');
-app.use(express.static(publicPath));
+// Serve static files from root directory
+app.use(express.static(__dirname));
 
 // Serve index.html for root path
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
-  res.sendFile(path.join(publicPath, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
