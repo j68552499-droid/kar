@@ -7,6 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve index.html at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 
 console.log('ENV loaded:');
@@ -93,4 +98,3 @@ function escapeHtml(s) {
 }
 
 app.listen(PORT, () => console.log(`\n🚀 Server running on http://localhost:${PORT}\n`));
-
