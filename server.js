@@ -5,11 +5,15 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html at root
+// Serve static files from public folder
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
+
+// Serve index.html for root path
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
