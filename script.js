@@ -53,6 +53,16 @@ const pagesData = [
       { key: '5-4', label: '🔥 How badly do you want to spend the whole night with me?', options: ['Very badly 🥵','Like... desperately 😍','Can\'t stop thinking about it 💭','So much it\'s driving me crazy 🔥','Others'] },
       { key: '5-5', label: '💕 What would you whisper in my ear that would make me blush?', options: ['I\'m madly in love with you 💕','You drive me crazy 🔥','I want you all to myself 😍','You\'re my only desire 🌹','Others'] }
     ]
+  },
+  {
+    title: '✨ MAGIC - Our Secret Fantasy',
+    questions: [
+      { key: '6-1', label: ' If we had all night alone, what would you do to me?', options: ['Kiss every part of you 💋','Hold you so close you feel wanted 🔥','Whisper how much I desire you 😍','Show you how much I love you 💕','Others'] },
+      { key: '6-2', label: '😈 What is your wildest fantasy with me?', options: ['Running away together 🏃','Intimate moments just for us 🌹','Exploring every inch of you 🔥','Making love all night long 💕','Others'] },
+      { key: '6-3', label: ' How do I make you lose control?', options: ['Your touch drives me crazy 🔥','The way you look at me 😍','Your voice makes me weak 🎵','Everything about you is irresistible 💕','Others'] },
+      { key: '6-4', label: ' What do you crave from me the most?', options: ['Your romantic touch 💋','Your passionate love 🔥','Your complete attention 😍','You... just you... all night 💕','Others'] },
+      { key: '6-5', label: '🌹 On a scale of love, how much do you want me?', options: ['More than anything in the world 🔥','Every second of every day 😍','I can\'t live without you 💕','You\'re my addiction, my obsession 🥵','Others'] }
+    ]
   }
 ];
 
@@ -239,7 +249,7 @@ nextBtn.addEventListener('click', async () => {
 
   if (current < pagesData.length - 1) { current++; render(); return; }
 
-  // On final page finish, build payload from saved answers
+  // On test4 finish, build payload from saved answers
   const payload = { name: '', pages: [] };
   const questionPages = pagesData.filter(p => !p.isLogin);
   payload.pages = questionPages.map(p => ({ 
