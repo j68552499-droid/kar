@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const path = require('path');
 
 const app = express();
@@ -16,11 +16,10 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 console.log('ENV loaded:');
-console.log('SMTP_HOST:', process.env.SMTP_HOST);
-console.log('SMTP_PORT:', process.env.SMTP_PORT);
-console.log('SMTP_USER:', process.env.SMTP_USER);
+console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing');
 console.log('SENDER_EMAIL:', process.env.SENDER_EMAIL);
 console.log('RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL);
 
@@ -28,53 +27,37 @@ app.post('/submit', async (req, res) => {
   try {
     const answers = req.body;
     console.log('\n✉️ Received answers, preparing email...');
-    console.log('SMTP Config check:', {
-      host: process.env.SMTP_HOST ? '✓ Set' : '✗ Missing',
-      port: process.env.SMTP_PORT ? '✓ Set' : '✗ Missing',
-      user: process.env.SMTP_USER ? '✓ Set' : '✗ Missing',
-      pass: process.env.SMTP_PASS ? '✓ Set' : '✗ Missing',
+    console.log('Config check:', {
+      apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing',
       sender: process.env.SENDER_EMAIL ? '✓ Set' : '✗ Missing',
       recipient: process.env.RECIPIENT_EMAIL ? '✓ Set' : '✗ Missing'
     });
 
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('❌ Missing required SMTP variables');
-      return res.status(500).json({ ok: false, error: 'Missing SMTP environment variables' });
+    if (!process.env.RESEND_API_KEY || !process.env.SENDER_EMAIL || !process.env.RECIPIENT_EMAIL) {
+      console.error('❌ Missing required environment variables');
+      return res.status(500).json({ ok: false, error: 'Missing environment variables' });
     }
 
-    console.log(`\n📧 Creating transporter for ${process.env.SMTP_USER}...`);
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      },
-      tls: {
-        rejectUnauthorized: false
-      },
-      connectionTimeout: 10000,
-      socketTimeout: 10000
-    });
-
-    console.log('📨 Transporter created, building email...');
-
+    console.log(`\n📧 Building email...`);
     const htmlBody = buildEmailHtml(answers);
 
-    console.log(`\n🚀 Attempting to send email to: ${process.env.RECIPIENT_EMAIL}`);
-    const info = await transporter.sendMail({
+    console.log(`\n🚀 Sending email via Resend to: ${process.env.RECIPIENT_EMAIL}`);
+    const result = await resend.emails.send({
       from: process.env.SENDER_EMAIL,
       to: process.env.RECIPIENT_EMAIL,
       subject: `Karthik completed the Love Game ❤️`,
       html: htmlBody
     });
 
-    console.log('✅ Email sent successfully! Message ID:', info.messageId);
-    res.json({ ok: true, messageId: info.messageId });
+    if (result.error) {
+      console.error('❌ Resend API error:', result.error);
+      return res.status(500).json({ ok: false, error: result.error.message });
+    }
+
+    console.log('✅ Email sent successfully! ID:', result.data.id);
+    res.json({ ok: true, messageId: result.data.id });
   } catch (err) {
     console.error('\n❌ FAILURE - Email Error:', err.message);
-    console.error('Error code:', err.code);
     console.error('Full error:', err);
     res.status(500).json({ ok: false, error: err.message });
   }
