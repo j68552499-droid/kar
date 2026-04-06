@@ -50,12 +50,12 @@ app.post('/submit', async (req, res) => {
       },
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 10000,
+      socketTimeout: 10000
     });
 
-    console.log('Testing SMTP connection...');
-    await transporter.verify();
-    console.log('✓ SMTP connection verified!');
+    console.log('✓ Transporter configured!');
 
     const htmlBody = buildEmailHtml(answers);
 
