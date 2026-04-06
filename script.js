@@ -43,6 +43,16 @@ const pagesData = [
       { key: '4-4', label: '🎁 What sweet thing would you do for me?', options: ['Surprise me with something cute 🎁','Make me laugh when I\'m sad 😄','Always support me 💪','Stay by my side 💕','Others'] },
       { key: '4-5', label: '💍 What promise would you make to me?', options: ['Always respect you 🙏','Always care for you 💕','Always be honest with you 🤝','Always stay with you 🫂','Others'] }
     ]
+  },
+  {
+    title: '🔥 SECRET - Just Between Us',
+    questions: [
+      { key: '5-1', label: '💋 If we were alone right now, would you kiss me?', options: ['Kiss you softly 💋','Kiss you passionately 🔥','Kiss you and never stop 😘','Pull you closer and kiss you more 💕','Others'] },
+      { key: '5-2', label: '🌙 What do you fantasize about doing with me at night?', options: ['Cuddling together under stars ⭐','Talking all night 💬','Holding you close and falling asleep 😴','Dancing slowly together 💃','Others'] },
+      { key: '5-3', label: '😍 What is the most attractive thing about my body?', options: ['Your smile 😊','Your eyes 👀','Your curves 😏','The way you move 💃','Others'] },
+      { key: '5-4', label: '🔥 How badly do you want to spend the whole night with me?', options: ['Very badly 🥵','Like... desperately 😍','Can\'t stop thinking about it 💭','So much it\'s driving me crazy 🔥','Others'] },
+      { key: '5-5', label: '💕 What would you whisper in my ear that would make me blush?', options: ['I\'m madly in love with you 💕','You drive me crazy 🔥','I want you all to myself 😍','You\'re my only desire 🌹','Others'] }
+    ]
   }
 ];
 
@@ -229,7 +239,7 @@ nextBtn.addEventListener('click', async () => {
 
   if (current < pagesData.length - 1) { current++; render(); return; }
 
-  // On test4 finish, build payload from saved answers
+  // On final page finish, build payload from saved answers
   const payload = { name: '', pages: [] };
   const questionPages = pagesData.filter(p => !p.isLogin);
   payload.pages = questionPages.map(p => ({ 
