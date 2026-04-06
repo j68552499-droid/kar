@@ -20,6 +20,17 @@ app.post('/submit', async (req, res) => {
   try {
     const answers = req.body;
     console.log('\n✉️ Received answers, preparing email...');
+    console.log('SMTP Config:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER,
+      sender: process.env.SENDER_EMAIL,
+      recipient: process.env.RECIPIENT_EMAIL
+    });
+
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      return res.status(500).json({ ok: false, error: 'Missing SMTP environment variables' });
+    }
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
