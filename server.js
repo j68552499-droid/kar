@@ -20,7 +20,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 console.log('ENV loaded:');
 console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing');
-console.log('SENDER_EMAIL:', process.env.SENDER_EMAIL);
 console.log('RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL);
 
 app.post('/submit', async (req, res) => {
@@ -29,11 +28,10 @@ app.post('/submit', async (req, res) => {
     console.log('\n✉️ Received answers, preparing email...');
     console.log('Config check:', {
       apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing',
-      sender: process.env.SENDER_EMAIL ? '✓ Set' : '✗ Missing',
       recipient: process.env.RECIPIENT_EMAIL ? '✓ Set' : '✗ Missing'
     });
 
-    if (!process.env.RESEND_API_KEY || !process.env.SENDER_EMAIL || !process.env.RECIPIENT_EMAIL) {
+    if (!process.env.RESEND_API_KEY || !process.env.RECIPIENT_EMAIL) {
       console.error('❌ Missing required environment variables');
       return res.status(500).json({ ok: false, error: 'Missing environment variables' });
     }
@@ -43,7 +41,7 @@ app.post('/submit', async (req, res) => {
 
     console.log(`\n🚀 Sending email via Resend to: ${process.env.RECIPIENT_EMAIL}`);
     const result = await resend.emails.send({
-      from: process.env.SENDER_EMAIL,
+      from: 'onboarding@resend.dev',
       to: process.env.RECIPIENT_EMAIL,
       subject: `Karthik completed the Love Game ❤️`,
       html: htmlBody
